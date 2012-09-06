@@ -28,11 +28,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -61,6 +68,40 @@ public class XsltServerController {
 	
 	@Resource
 	private FileService fileService;
+	
+	private SSLSocketFactory sslSocketFactory;
+	
+    final static TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] chain, String authType)
+				throws java.security.cert.CertificateException {
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] chain, String authType)
+				throws java.security.cert.CertificateException {	
+		}
+
+		@Override
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+		
+    } };
+
+	public XsltServerController() {
+		super();
+		try {
+			final SSLContext sslContext = SSLContext.getInstance("SSL");
+			sslContext.init(null, TRUST_ALL_CERTS,
+					new java.security.SecureRandom());
+			// Create an ssl socket factory with our all-trusting manager
+			this.sslSocketFactory = sslContext.getSocketFactory();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -123,7 +164,7 @@ public class XsltServerController {
 			
 			xsltInputStream = new FileInputStream(file);
 		} else {
-			xsltInputStream = xslturl.openStream();
+			xsltInputStream = this.createInputStreamFromUrl(xslturl);
 		}
 		
 		InputStream xmlInputStream;
@@ -135,7 +176,7 @@ public class XsltServerController {
 			
 			xmlInputStream = new FileInputStream(file);
 		} else {
-			xmlInputStream = xmlurl.openStream();
+			xmlInputStream = this.createInputStreamFromUrl(xmlurl);
 		}
 
 		transformer.transform(
@@ -143,6 +184,16 @@ public class XsltServerController {
 				xsltInputStream,
 				response.getOutputStream(), 
 				params);
+	}
+	
+	protected InputStream createInputStreamFromUrl(URL url) throws IOException {
+		final URLConnection urlCon = url.openConnection();
+	    
+		if(urlCon instanceof HttpsURLConnection){
+			( (HttpsURLConnection) urlCon ).setSSLSocketFactory( sslSocketFactory );
+		}
+
+		return urlCon.getInputStream();
 	}
 
 	/**

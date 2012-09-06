@@ -35,7 +35,7 @@
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
-				 </exclusion>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -48,7 +48,7 @@
 			<artifactId>spring-web</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-		
+
 		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -75,15 +75,15 @@
 			<artifactId>spring-security-taglibs</artifactId>
 			<version>${spring-security.version}</version>
 		</dependency>
-		
-				
+
+
 		<!-- AspectJ -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>${org.aspectj-version}</version>
-		</dependency>	
-		
+		</dependency>
+
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -133,7 +133,7 @@
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
 		</dependency>
-				
+
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -152,33 +152,33 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-		
+
 		<!-- Extra -->
-<dependency>
-    <groupId>net.sf.saxon</groupId>
-    <artifactId>saxon</artifactId>
-    <version>8.7</version>
-</dependency>
-		
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>saxon</artifactId>
+			<version>8.7</version>
+		</dependency>
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.2.2</version>
 		</dependency>
-	
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.7</version>
 			<scope>test</scope>
-		</dependency>        
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -220,7 +220,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<repositories>
 		<!-- For developing against latest Spring milestones -->
 		<repository>
