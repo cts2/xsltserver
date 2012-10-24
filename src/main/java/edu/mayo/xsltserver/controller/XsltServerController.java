@@ -35,14 +35,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -71,7 +74,7 @@ public class XsltServerController {
 	
 	private SSLSocketFactory sslSocketFactory;
 	
-    final static TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
+    private final static TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
 
 		@Override
 		public void checkClientTrusted(X509Certificate[] chain, String authType)
@@ -90,6 +93,15 @@ public class XsltServerController {
 		
     } };
 
+    private final static HostnameVerifier VERIFY_ALL_HOST_NAMES = new HostnameVerifier(){
+
+		@Override
+		public boolean verify(String arg0, SSLSession arg1) {
+			return true;
+		}
+		
+	};
+	
 	public XsltServerController() {
 		super();
 		try {
@@ -190,7 +202,9 @@ public class XsltServerController {
 		final URLConnection urlCon = url.openConnection();
 	    
 		if(urlCon instanceof HttpsURLConnection){
-			( (HttpsURLConnection) urlCon ).setSSLSocketFactory( sslSocketFactory );
+			HttpsURLConnection connection = (HttpsURLConnection) urlCon;
+			connection.setHostnameVerifier( VERIFY_ALL_HOST_NAMES );
+			connection.setSSLSocketFactory( sslSocketFactory );
 		}
 
 		return urlCon.getInputStream();
